@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+`pacman -Q`.each_line do |ln|
+  if ln =~ /(.+?)\s.+/
+    if `pacman -Si #{$1} 2> /dev/null | wc -l`.to_i == 0
+      puts "Found: #{$1}"
+    end
+  end
+end
