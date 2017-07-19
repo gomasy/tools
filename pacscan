@@ -1,9 +1,27 @@
 #!/usr/bin/env ruby
 
-`pacman -Q`.each_line do |ln|
-  if ln =~ /(.+?)\s.+/
-    if `pacman -Si #{$1} 2> /dev/null | wc -l`.to_i == 0
-      puts "Found: #{$1}"
+require "optparse"
+
+@flags = {
+  :aur => false,
+  :scan => false,
+  :verbose => false,
+}
+
+opt = OptionParser.new
+opt.version = "0.0.1"
+opt.on("-a", "--include-aur", help = "Include packages of AUR. (very slow)") { @flags[:aur] = true }
+opt.on("-s", "--scan", help = "Scan for packages that not exist.") { @flags[:scan] = true }
+opt.on("-v", "--verbose", help = "Verbose output.") { @flags[:verbose] = true }
+opt.parse!(ARGV)
+
+if @flags[:scan]
+  `pacman -Q`.each_line do |n|
+    if n =~ /(.+?)\s.+/
+      puts "Checking for #{$1}..." if @flags[:verbose]
+      `#{@flags[:aur] ? "yaourt" : "pacman"} -Si #{$1}; echo -n $?`
     end
   end
+else
+  puts "Error: invalid or insufficient operands."
 end
