@@ -19,7 +19,7 @@ if @flags[:scan]
   `pacman -Q`.each_line do |n|
     if n =~ /(.+?)\s.+/
       puts "Checking for #{$1}..." if @flags[:verbose]
-      `#{@flags[:aur] ? "yaourt" : "pacman"} -Si #{$1}; echo -n $?`
+      `#{@flags[:aur] ? "yaourt" : "pacman"} -Si #{$1}`
     end
   end
 else
