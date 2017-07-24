@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+require "optparse"
+
+DIRS = [
+  ENV["HOME"] + "/.cache/winetricks",
+  ENV["HOME"] + "/.local/share/applications",
+  ENV["HOME"] + "/.local/share/desktop-directories",
+  ENV["HOME"] + "/.local/share/icons",
+  ENV["HOME"] + "/.local/share/mime",
+]
+
+def rmdir(d)
+  puts "\e[31;1mRUN:\e[m rm -rf #{d}"
+  system("rm -rf #{d}")
+end
+
+@opt = {
+  :clean => false,
+  :prefix => nil,
+}
+
+opt = OptionParser.new
+opt.version = "0.0.1"
+opt.on("-c", "--clean", help = "Clean wine environment.") do
+  @opt[:clean] = true
+end
+opt.on("-p [PREFIX]", "--prefix", help = "Set wine prefix.") do |v|
+  @opt[:prefix] = v
+end
+opt.parse!(ARGV)
+
+if @opt[:clean]
+  puts "\e[1m==> Starting cleanup...\e[m"
+  DIRS.each {|d| rmdir(d) }
+  winedir = @opt[:prefix].nil? ? ENV["HOME"] + "/.wine" : @opt[:prefix]
+  rmdir(winedir)
+else
+  puts "Error: invaild or insufficient operands."
+end
